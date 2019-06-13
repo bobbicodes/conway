@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Conway's Game of Life</title>
+<link rel="stylesheet" type="text/css" href="https://storage.googleapis.com/app.klipse.tech/css/codemirror.css">
+<script>
+    window.klipse_settings = {
+        selector: '.language-klipse',
+        selector_reagent: '.language-reagent',
+    };
+</script>
+</head>
+<body>
+<h1><center>Conway's Game of Life</center></h1>
+<pre><code class="language-klipse">
+(require '[reagent.core :as r :refer [atom]])
+
+(def app-state (atom {:status "not started"}))
+
+(def world-size 10)
+
+(defn wrap-coordinate [n]
+  (mod n world-size))
+
+(defn wrap-square [[x y]]
+  [(wrap-coordinate x) (wrap-coordinate y)])
+
+(defn wrap-squares [lives]
+  (map wrap-square lives))
+
+(def lives
+  (r/atom #{[0 3] [1 3] [9 3]}))
+
+(defn neighbors [[x y]]
+  (for [dx [(- (dec world-size)) -1 0 1 (dec world-size)]
+        dy [(- (dec world-size)) -1 0 1 (dec world-size)]
+        :when (not (= 0 dx dy))]
+    [(+ x dx) (+ y dy)]))
+
+(defn step [lives]
+  (set (for [[pos live-neighbors] (frequencies (mapcat neighbors lives))
+             :when (or (= 3 live-neighbors)
+                       (and (contains? lives pos)
+                            (= 2 live-neighbors)))]
+         pos)))
+
+(defn step! []
+  (reset! lives (step @lives)))
+
+(defn rect-cell [x y]
+  [:rect.cell
+   {:x (+ 0.05 x) :width 0.9
+    :y (+ 0.05 y) :height 0.9
+    :fill "white"
+    :stroke-width 0.025
+    :stroke "black"}])
+
+(defn dead [x y]
+  [:rect
+   {:width 0.9
+    :height 0.9
+    :fill "white"
+    :x (+ 0.05 x)
+    :y (+ 0.05 y)
+    :on-click
+    (fn click-square [e]
+      (if (= (:status @app-state) "not started")
+        (swap! lives conj [x y])
+        (js/alert "Hands off! You are not God.")))}])
+
+(defn life [x y]
+  [:rect
+   {:width 0.9
+    :height 0.9
+    :fill "purple"
+    :x (+ 0.05 x)
+    :y (+ 0.05 y)
+    :on-click
+    (fn click-square [e]
+      (swap! lives disj [x y]))}])
+
+(defn render-board []
+  (into
+   [:svg.board
+    {:view-box (str "0 0 " world-size " " world-size)
+     :shape-rendering "auto"
+     :style {:max-height "500px"}}]
+   (for [x (range world-size)
+         y (range world-size)]
+     [:g
+      [rect-cell x y]
+      (if (some #{[x y]} @lives)
+        [life x y]
+        [dead x y])])))
+
+(defn game []
+  [:center
+   [:h1 "Conway's Game of Life"]
+   [:p @lives]
+   [:button
+    {:on-click
+     (fn step-click [e]
+       (swap! lives step)
+       (swap! app-state assoc-in [:status] "started"))}
+    "Step"]
+   [:button
+    {:on-click
+     (fn step-click [e]
+       (reset! lives #{})
+       (swap! app-state assoc-in [:status] "not started"))}
+    "Reset"]
+   [:div [render-board]]])
+</code></pre>
+<pre><code class="language-reagent">
+[game]
+</code></pre>
+<script src="https://storage.googleapis.com/app.klipse.tech/plugin/js/klipse_plugin.js"></script>
+</body>
+</html>
