@@ -83,10 +83,9 @@
                  y (range world-size)]
              [:g
               [rect-cell x y]
-              (let [x-pos (mod x world-size) y-pos (mod y world-size)]
-                (if (some #{[x-pos y-pos]} (wrap-squares @lives))
+                (if (some #{[x y]} (wrap-squares @lives))
                 [life x y]
-                [dead x y]))])))
+                [dead x y]))]))
 
 (defn game []
   [:center
