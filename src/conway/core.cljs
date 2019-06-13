@@ -3,35 +3,42 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]))
 
-(println "This text is printed from src/conway/core.cljs. Go ahead and edit it and see reloading in action.")
-
 (defn multiply [a b] (* a b))
 
-
-;; define your app data so that it doesn't get over-written on reload
-(defonce app-state (atom {:text "Hello world!"}))
+(defonce app-state (atom {:status "not started"}))
 
 (defn get-app-element []
   (gdom/getElement "app"))
 
 (def world-size 10)
 
-(def lives
-  (atom #{[1 0] [1 1] [1 2]}))
+(defn wrap-coordinate [n]
+  (mod n world-size))
 
-(defn neighbors [[x y]]
-  (for [dx [-1 0 1] dy [-1 0 1]
+(defn wrap-square [[x y]]
+  [(wrap-coordinate x) (wrap-coordinate y)])
+
+(defn wrap-squares [lives]
+  (map wrap-square lives))
+
+(def lives
+  (atom #{[0 3] [1 3] [9 3]}))
+
+  (defn neighbors [[x y]]
+    (for [dx [-1 0 1]
+          dy [-1 0 1]
         :when (not (= 0 dx dy))]
     [(+ x dx) (+ y dy)]))
 
 (defn step [lives]
   (set (for [[pos live-neighbors] (frequencies (mapcat neighbors lives))
-             :when (or (= 3 live-neighbors) (and (contains? lives pos)
-                                                 (= 2 live-neighbors)))]
+             :when (or (= 3 live-neighbors)
+                       (and (contains? lives pos)
+                            (= 2 live-neighbors)))]
          pos)))
 
 (defn step! []
-  (swap! lives step))
+  (reset! lives (step @lives)))
 
 (defn rect-cell [x y]
   [:rect.cell
@@ -50,7 +57,9 @@
     :y (+ 0.05 y)
     :on-click
     (fn click-square [e]
-        (swap! lives conj [x y]))}])
+      (if (= (:status @app-state) "not started")
+        (swap! lives conj [x y])
+        (js/alert "Hands off! You are not God.")))}])
 
 (defn life [x y]
   [:rect
@@ -65,26 +74,35 @@
 
 (defn render-board []
   (into
-   [:svg.board
-    {:view-box (str "0 0 " world-size " " world-size)
-     :shape-rendering "auto"
-     :style {:max-height "500px"}}]
-   (for [x (range world-size)
-         y (range world-size)]
-     [:g
-      [rect-cell x y]
-      (if (some #{[x y]} @lives)
-        [life x y]
-        [dead x y])])))
+    [:svg.board
+      {:view-box (str "0 0 " world-size " " world-size)
+       :shape-rendering "auto"
+       :style {:max-height "500px"}}]
+           (for [x (range world-size)
+                 y (range world-size)]
+             [:g
+              [rect-cell x y]
+              (let [x-pos (mod x world-size) y-pos (mod y world-size)]
+                (if (some #{[x-pos y-pos]} (wrap-squares @lives))
+                [life x y]
+                [dead x y]))])))
 
 (defn game []
   [:center
    [:h1 "Conway's Game of Life"]
+   [:p @lives]
    [:button
     {:on-click
      (fn step-click [e]
-       (swap! lives step))}
+       (swap! lives step)
+       (swap! app-state assoc-in [:status] "started"))}
     "Step"]
+    [:button
+     {:on-click
+      (fn step-click [e]
+        (reset! lives #{})
+        (swap! app-state assoc-in [:status] "not started"))}
+     "Reset"]
    [:div [render-board]]])
 
 (defn mount [el]
@@ -101,7 +119,9 @@
 ;; specify reload hook with ^;after-load metadata
 (defn ^:after-load on-reload []
   (mount-app-element)
-  ;; optionally touch your app-state to force rerendering depending on
+  ;; optionally touch your a
+
+;; define your app data so that it doesn't get over-written on reloadpp-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
 )
