@@ -24,9 +24,8 @@
 (def lives
   (atom #{}))
 
-  (defn neighbors [[x y]]
-    (for [dx [-1 0 1]
-          dy [-1 0 1]
+(defn neighbors [[x y]]
+  (for [dx [-1 0 1] dy [-1 0 1]
         :when (not (= 0 dx dy))]
     [(+ x dx) (+ y dy)]))
 
@@ -70,7 +69,9 @@
     :y (+ 0.05 y)
     :on-click
     (fn click-square [e]
-        (swap! lives disj [x y]))}])
+      (if (= (:status @app-state) "not started")
+        (swap! lives disj [x y])
+        (js/alert "Ouch!")))}])
 
 (defn render-board []
   (into
@@ -115,7 +116,6 @@
           #{[4 3] [5 3] [7 2] [5 5] [8 3] [7 4] [5 4]
             [6 5] [4 4] [7 3] [6 2] [6 4]}))}
      "Spaceship"]
-
    [:button
     {:on-click
      (fn step-click [e]
