@@ -85,7 +85,7 @@
               [rect-cell x y]
                 (if (some #{[x y]} (wrap-squares @lives))
                 [life x y]
-                [dead x y]))]))
+                [dead x y])])))
 
 (defn game []
   [:center
