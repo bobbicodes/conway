@@ -22,7 +22,7 @@
   (map wrap-square lives))
 
 (def lives
-  (atom #{[0 3] [1 3] [9 3]}))
+  (atom #{}))
 
   (defn neighbors [[x y]]
     (for [dx [-1 0 1]
@@ -90,8 +90,7 @@
 (defn game []
   [:center
    [:h1 "Conway's Game of Life"]
-   [:p @lives]
-   [:button
+   [:div [:button
     {:on-click
      (fn step-click [e]
        (swap! lives step)
@@ -102,8 +101,31 @@
       (fn step-click [e]
         (reset! lives #{})
         (swap! app-state assoc-in [:status] "not started"))}
-     "Reset"]
-   [:div [render-board]]])
+     "Reset"]]
+   [:div [:button
+    {:on-click
+     (fn step-click [e]
+       (reset! lives
+         #{[3 4] [4 4] [5 4] [5 3] [4 2]}))}
+    "Glider"]
+    [:button
+     {:on-click
+      (fn step-click [e]
+        (reset! lives
+          #{[4 3] [5 3] [7 2] [5 5] [8 3] [7 4] [5 4]
+            [6 5] [4 4] [7 3] [6 2] [6 4]}))}
+     "Spaceship"]
+
+   [:button
+    {:on-click
+     (fn step-click [e]
+       (reset! lives
+         #{[5 7] [4 3] [3 4] [5 3] [3 2] [4 6] [5 5]
+           [5 6] [5 2] [3 1] [5 1] [4 5] [3 3] [5 4]
+           [3 5] [4 8] [4 1] [3 6] [5 8] [3 8] [4 4] [3 7]}))}
+    "Penta-decathlon"]]
+   [:div [render-board]]
+   [:p (str "Current residents:" @lives)]])
 
 (defn mount [el]
   (reagent/render-component [game] el))
