@@ -50,18 +50,21 @@
 
 (def glider
   {:name "Glider"
-   :lives #{[3 4] [4 4] [5 4] [5 3] [4 2]}})
+   :lives #{[3 4] [4 4] [5 4] [5 3] [4 2]}
+   :size 10})
 
 (def spaceship
   {:name "Spaceship"
    :lives #{[4 3] [5 3] [7 2] [5 5] [8 3] [7 4] [5 4]
-            [6 5] [4 4] [7 3] [6 2] [6 4]}})
+            [6 5] [4 4] [7 3] [6 2] [6 4]}
+   :size 10})
 
 (def penta-decathlon
   {:name "Penta-decathlon"
    :lives
    #{[4 3] [3 4] [2 4] [9 3] [11 4] [4 5] [9 5] [7 4]
-     [8 4] [5 4] [10 4] [6 4]}})
+     [8 4] [5 4] [10 4] [6 4]}
+  :size 14})
 
 (def glider-gun
   {:name "Glider gun"
@@ -71,7 +74,8 @@
             [23 18] [34 16] [32 15] [12 15] [33 13]
             [36 17] [46 14] [29 16] [36 11] [12 16]
             [22 15] [23 14] [24 13] [22 16] [22 17]
-            [32 14] [33 15] [13 16] [47 14] [13 15] [46 13]}})
+            [32 14] [33 15] [13 16] [47 14] [13 15] [46 13]}
+   :size 30})
 
 (defn rect-cell [x y]
   [:rect.cell
@@ -125,7 +129,8 @@
   [:button
    {:on-click
     (fn step-click [e]
-      (reset! lives (:lives m)))}
+      (reset! lives (:lives m))
+      (reset! world-size (:size m)))}
    (:name m)])
 
 (defn game []
