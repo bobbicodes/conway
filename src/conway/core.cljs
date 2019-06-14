@@ -42,10 +42,10 @@
 
 (defn rect-cell [x y]
   [:rect.cell
-   {:x (+ 0.05 x) :width 0.9
-    :y (+ 0.05 y) :height 0.9
+   {:x x :width 1
+    :y y :height 1
     :fill "white"
-    :stroke-width 0.05
+    :stroke-width 0.025
     :stroke "black"}])
 
 (defn dead [x y]
@@ -121,10 +121,14 @@
       (reset! lives (:lives m)))}
       (:name m)])
 
-(def step-timer (atom (js/setInterval #(swap! lives step) 100000)))
+(def step-timer (atom 0))
+
+(def timer (atom :off))
 
 (defn start-timer! []
-  (reset! step-timer (js/setInterval #(swap! lives step) 300)))
+  (when (= @timer :off)
+    (reset! step-timer (js/setInterval #(swap! lives step) 300))
+    (reset! timer :on)))
 
 (defn stop-timer! [timer]
   (js/clearInterval timer))
@@ -142,19 +146,20 @@
      "Step"]
     [:button
      {:on-click
-      (fn step-click [e]
+      (fn play-click [e]
         (start-timer!)
         (reset! status "started"))}
      "Play"]
     [:button
      {:on-click
-      (fn step-click [e]
+      (fn stop-click [e]
         (stop-timer! @step-timer)
-        (reset! status "started"))}
+        (reset! status "started")
+        (reset! timer :off))}
      "Stop"]
     [:button
      {:on-click
-      (fn step-click [e]
+      (fn reset-click [e]
         (reset! lives #{})
         (reset! status "not started"))}
      "Reset"]]
