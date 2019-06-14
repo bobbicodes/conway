@@ -154,7 +154,6 @@
      {:on-click
       (fn stop-click [e]
         (stop-timer! @step-timer)
-        (reset! status "started")
         (reset! timer :off))}
      "Stop"]
     [:button
