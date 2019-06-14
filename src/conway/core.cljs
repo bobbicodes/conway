@@ -52,7 +52,7 @@
   [:rect
    {:width 0.9
     :height 0.9
-    :fill "white"
+    :fill "lightpink"
     :x (+ 0.05 x)
     :y (+ 0.05 y)
     :on-click
