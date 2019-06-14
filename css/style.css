@@ -7,3 +7,7 @@ input[type=number] {
   padding: 2px 0;
   background-color: lightgray;
 }
+
+h1 {
+  font-family: "Courier New", Courier, serif;
+}
