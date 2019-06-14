@@ -4,6 +4,6 @@ body {
 
 input[type=number] {
   width: 8%;
-  padding: 6px 0;
+  padding: 2px 0;
   background-color: lightgray;
 }
