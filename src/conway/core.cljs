@@ -3,6 +3,19 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]))
 
+(defn neighbors [[x y]]
+  (for [dx [-1 0 1] dy [-1 0 1]
+        :when (not (= 0 dx dy))]
+    [(+ x dx) (+ y dy)]))
+
+(defn step [lives]
+  (set (for [[pos live-neighbors]
+             (frequencies (mapcat neighbors lives))
+             :when (or (= 3 live-neighbors)
+                       (and (contains? lives pos)
+                            (= 2 live-neighbors)))]
+         pos)))
+
 (def status (atom "not started"))
 
 (def world-size (atom 10))
@@ -36,19 +49,6 @@
 
 (defn wrap-squares [lives]
   (map wrap-square lives))
-
-(defn neighbors [[x y]]
-  (for [dx [-1 0 1] dy [-1 0 1]
-        :when (not (= 0 dx dy))]
-    [(+ x dx) (+ y dy)]))
-
-(defn step [lives]
-  (set (for [[pos live-neighbors]
-             (frequencies (mapcat neighbors lives))
-             :when (or (= 3 live-neighbors)
-                       (and (contains? lives pos)
-                            (= 2 live-neighbors)))]
-         pos)))
 
 (def glider
   {:name "Glider"
@@ -161,10 +161,10 @@
         (reset! status "not started"))}
      "Reset"]]
    [:div
-    (config-button glider)
-    (config-button spaceship)
-    (config-button penta-decathlon)
-    (config-button glider-gun)]
+    [config-button glider]
+    [config-button spaceship]
+    [config-button penta-decathlon]
+    [config-button glider-gun]]
    [:div [render-board]]
    [:p (str "Current residents: " @lives)]
    [:p (str "Wrapped to: " (wrap-squares @lives))]])
