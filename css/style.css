@@ -1,3 +1,9 @@
 body {
   background-color: lightblue;
 }
+
+input[type=number] {
+  width: 8%;
+  padding: 6px 0;
+  background-color: lightgray;
+}
