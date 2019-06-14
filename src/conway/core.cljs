@@ -9,6 +9,32 @@
 
 (def world-size (atom 10))
 
+(def glider
+  {:name "Glider"
+   :lives #{[3 4] [4 4] [5 4] [5 3] [4 2]}})
+
+(def spaceship
+  {:name "Spaceship"
+   :lives #{[4 3] [5 3] [7 2] [5 5] [8 3] [7 4] [5 4]
+            [6 5] [4 4] [7 3] [6 2] [6 4]}})
+
+(def penta-decathlon
+  {:name "Penta-decathlon"
+   :lives
+   #{[5 7] [4 3] [3 4] [5 3] [3 2] [4 6] [5 5]
+     [5 6] [5 2] [3 1] [5 1] [4 5] [3 3] [5 4]
+     [3 5] [4 8] [4 1] [3 6] [5 8] [3 8] [4 4] [3 7]}})
+
+(def glider-gun
+  {:name "Glider gun"
+   :lives #{[27 18] [32 13] [25 13] [28 15] [36 16]
+            [25 19] [28 17] [47 13] [28 16] [33 14]
+            [34 12] [36 12] [27 14] [24 19] [26 16]
+            [23 18] [34 16] [32 15] [12 15] [33 13]
+            [36 17] [46 14] [29 16] [36 11] [12 16]
+            [22 15] [23 14] [24 13] [22 16] [22 17]
+            [32 14] [33 15] [13 16] [47 14] [13 15] [46 13]}})
+
 (defn size-input [value]
   [:input {:type "number"
            :value @world-size
@@ -88,32 +114,6 @@
                 [life x y]
                 [dead x y])])))
 
-(def glider-gun
-  {:name "Glider gun"
-   :lives #{[27 18] [32 13] [25 13] [28 15] [36 16]
-            [25 19] [28 17] [47 13] [28 16] [33 14]
-            [34 12] [36 12] [27 14] [24 19] [26 16]
-            [23 18] [34 16] [32 15] [12 15] [33 13]
-            [36 17] [46 14] [29 16] [36 11] [12 16]
-            [22 15] [23 14] [24 13] [22 16] [22 17]
-            [32 14] [33 15] [13 16] [47 14] [13 15] [46 13]}})
-
-(def penta-decathlon
-  {:name "Penta-decathlon"
-   :lives
-   #{[5 7] [4 3] [3 4] [5 3] [3 2] [4 6] [5 5]
-     [5 6] [5 2] [3 1] [5 1] [4 5] [3 3] [5 4]
-     [3 5] [4 8] [4 1] [3 6] [5 8] [3 8] [4 4] [3 7]}})
-
-(def glider
-  {:name "Glider"
-   :lives #{[3 4] [4 4] [5 4] [5 3] [4 2]}})
-
-(def spaceship
-  {:name "Spaceship"
-   :lives #{[4 3] [5 3] [7 2] [5 5] [8 3] [7 4] [5 4]
-            [6 5] [4 4] [7 3] [6 2] [6 4]}})
-
 (defn config-button [m]
   [:button
    {:on-click
@@ -121,13 +121,13 @@
       (reset! lives (:lives m)))}
       (:name m)])
 
-(def step-timer (atom 0))
+(def timer-id (atom 0))
 
 (def timer (atom :off))
 
 (defn start-timer! []
   (when (= @timer :off)
-    (reset! step-timer (js/setInterval #(swap! lives step) 300))
+    (reset! timer-id (js/setInterval #(swap! lives step) 300))
     (reset! timer :on)))
 
 (defn stop-timer! [timer]
@@ -153,7 +153,7 @@
     [:button
      {:on-click
       (fn stop-click [e]
-        (stop-timer! @step-timer)
+        (stop-timer! @timer-id)
         (reset! timer :off))}
      "Stop"]
     [:button
