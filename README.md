@@ -1,6 +1,14 @@
 # conway
 
-[Conway's Game of Life](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=2ahUKEwin5u75uObiAhXlhFQKHaygCYUQFjABegQIBBAB&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FConway%2527s_Game_of_Life&usg=AOvVaw3Ren4zMW9qfyNBCmJvYMlL) using the [Reagent](https://github.com/reagent-project/reagent) wrapper for React. Infinite world, with sample configurations.
+[Conway's Game of Life](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=2&cad=rja&uact=8&ved=2ahUKEwin5u75uObiAhXlhFQKHaygCYUQFjABegQIBBAB&url=https%3A%2F%2Fen.wikipedia.org%2Fwiki%2FConway%2527s_Game_of_Life&usg=AOvVaw3Ren4zMW9qfyNBCmJvYMlL) using the [Reagent](https://github.com/reagent-project/reagent) wrapper for React.
+
+## Features
+
+* Infinite world
+* Animated stepper
+* Selectable starting sequence
+* Sample configurations
+* Custom grid size
 
 Play it live [Here](https://porkostomus.github.io/conway/)
 
