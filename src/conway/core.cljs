@@ -3,11 +3,52 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]))
 
-(defn multiply [a b] (* a b))
-
 (def status (atom "not started"))
 
 (def world-size (atom 10))
+
+(def lives (atom #{}))
+
+(def timer-id (atom 0))
+
+(def timer (atom :off))
+
+(defn start-timer! []
+  (when (= @timer :off)
+    (reset! timer-id (js/setInterval #(swap! lives step) 300))
+    (reset! timer :on)))
+
+(defn stop-timer! [timer]
+  (js/clearInterval timer))
+
+(defn size-input [value]
+  [:input {:type "number"
+           :value @world-size
+           :on-change #(reset! world-size (-> % .-target .-value))}])
+
+(defn size-field []
+  (fn []
+    [:div
+     [:p "World size: " [size-input @world-size]]]))
+
+(defn wrap-square [[x y]]
+  [(mod x (js/parseInt @world-size)) (mod y (js/parseInt @world-size))])
+
+(defn wrap-squares [lives]
+  (map wrap-square lives))
+
+(defn neighbors [[x y]]
+  (for [dx [-1 0 1] dy [-1 0 1]
+        :when (not (= 0 dx dy))]
+    [(+ x dx) (+ y dy)]))
+
+(defn step [lives]
+  (set (for [[pos live-neighbors]
+             (frequencies (mapcat neighbors lives))
+             :when (or (= 3 live-neighbors)
+                       (and (contains? lives pos)
+                            (= 2 live-neighbors)))]
+         pos)))
 
 (def glider
   {:name "Glider"
@@ -34,37 +75,6 @@
             [36 17] [46 14] [29 16] [36 11] [12 16]
             [22 15] [23 14] [24 13] [22 16] [22 17]
             [32 14] [33 15] [13 16] [47 14] [13 15] [46 13]}})
-
-(defn size-input [value]
-  [:input {:type "number"
-           :value @world-size
-           :on-change #(reset! world-size (-> % .-target .-value))}])
-
-(defn size-field []
-    (fn []
-      [:div
-       [:p "World size: " [size-input @world-size]]]))
-
-(defn wrap-square [[x y]]
-  [(mod x (js/parseInt @world-size)) (mod y (js/parseInt @world-size))])
-
-(defn wrap-squares [lives]
-  (map wrap-square lives))
-
-(def lives (atom #{}))
-
-(defn neighbors [[x y]]
-  (for [dx [-1 0 1] dy [-1 0 1]
-        :when (not (= 0 dx dy))]
-    [(+ x dx) (+ y dy)]))
-
-(defn step [lives]
-  (set (for [[pos live-neighbors]
-             (frequencies (mapcat neighbors lives))
-             :when (or (= 3 live-neighbors)
-                       (and (contains? lives pos)
-                            (= 2 live-neighbors)))]
-         pos)))
 
 (defn rect-cell [x y]
   [:rect.cell
@@ -102,36 +112,24 @@
 
 (defn render-board []
   (into
-    [:svg.board
-      {:view-box (str "0 0 " @world-size " " @world-size)
-       :shape-rendering "auto"
-       :style {:max-height "500px"}}]
-           (for [x (range @world-size)
-                 y (range @world-size)]
-             [:g
-              [rect-cell x y]
-                (if (some #{[x y]} (wrap-squares @lives))
-                [life x y]
-                [dead x y])])))
+   [:svg.board
+    {:view-box (str "0 0 " @world-size " " @world-size)
+     :shape-rendering "auto"
+     :style {:max-height "500px"}}]
+   (for [x (range @world-size)
+         y (range @world-size)]
+     [:g
+      [rect-cell x y]
+      (if (some #{[x y]} (wrap-squares @lives))
+        [life x y]
+        [dead x y])])))
 
 (defn config-button [m]
   [:button
    {:on-click
     (fn step-click [e]
       (reset! lives (:lives m)))}
-      (:name m)])
-
-(def timer-id (atom 0))
-
-(def timer (atom :off))
-
-(defn start-timer! []
-  (when (= @timer :off)
-    (reset! timer-id (js/setInterval #(swap! lives step) 300))
-    (reset! timer :on)))
-
-(defn stop-timer! [timer]
-  (js/clearInterval timer))
+   (:name m)])
 
 (defn game []
   [:center
@@ -193,4 +191,4 @@
 ;; define your app data so that it doesn't get over-written on reloadpp-state to force rerendering depending on
   ;; your application
   ;; (swap! app-state update-in [:__figwheel_counter] inc)
-)
+  )
