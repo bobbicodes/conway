@@ -3,32 +3,6 @@
    [goog.dom :as gdom]
    [reagent.core :as reagent :refer [atom]]))
 
-(def glider
-  {:name "Glider"
-   :lives #{[3 4] [4 4] [5 4] [5 3] [4 2]}})
-
-(def spaceship
-  {:name "Spaceship"
-   :lives #{[4 3] [5 3] [7 2] [5 5] [8 3] [7 4] [5 4]
-            [6 5] [4 4] [7 3] [6 2] [6 4]}})
-
-(def penta-decathlon
-  {:name "Penta-decathlon"
-   :lives
-   #{[5 7] [4 3] [3 4] [5 3] [3 2] [4 6] [5 5]
-     [5 6] [5 2] [3 1] [5 1] [4 5] [3 3] [5 4]
-     [3 5] [4 8] [4 1] [3 6] [5 8] [3 8] [4 4] [3 7]}})
-
-(def glider-gun
-  {:name "Glider gun"
-   :lives #{[27 18] [32 13] [25 13] [28 15] [36 16]
-            [25 19] [28 17] [47 13] [28 16] [33 14]
-            [34 12] [36 12] [27 14] [24 19] [26 16]
-            [23 18] [34 16] [32 15] [12 15] [33 13]
-            [36 17] [46 14] [29 16] [36 11] [12 16]
-            [22 15] [23 14] [24 13] [22 16] [22 17]
-            [32 14] [33 15] [13 16] [47 14] [13 15] [46 13]}})
-
 (defn neighbors [[x y]]
   (for [dx [-1 0 1] dy [-1 0 1]
         :when (not (= 0 dx dy))]
@@ -60,21 +34,45 @@
 (defn stop-timer! [timer]
   (js/clearInterval timer))
 
-(defn size-input [value]
-  [:input {:type "number"
-           :value @world-size
-           :on-change #(reset! world-size (-> % .-target .-value))}])
-
-(defn size-field []
+(defn size-input []
   (fn []
     [:div
-     [:p "World size: " [size-input @world-size]]]))
+     [:p "World size: "
+      [:input {:type "number"
+               :value @world-size
+               :on-change #(reset! world-size (-> % .-target .-value))}]]]))
 
 (defn wrap-square [[x y]]
   [(mod x (js/parseInt @world-size)) (mod y (js/parseInt @world-size))])
 
 (defn wrap-squares [lives]
   (map wrap-square lives))
+
+(def glider
+  {:name "Glider"
+   :lives #{[3 4] [4 4] [5 4] [5 3] [4 2]}})
+
+(def spaceship
+  {:name "Spaceship"
+   :lives #{[4 3] [5 3] [7 2] [5 5] [8 3] [7 4] [5 4]
+            [6 5] [4 4] [7 3] [6 2] [6 4]}})
+
+(def penta-decathlon
+  {:name "Penta-decathlon"
+   :lives
+   #{[5 7] [4 3] [3 4] [5 3] [3 2] [4 6] [5 5]
+     [5 6] [5 2] [3 1] [5 1] [4 5] [3 3] [5 4]
+     [3 5] [4 8] [4 1] [3 6] [5 8] [3 8] [4 4] [3 7]}})
+
+(def glider-gun
+  {:name "Glider gun"
+   :lives #{[27 18] [32 13] [25 13] [28 15] [36 16]
+            [25 19] [28 17] [47 13] [28 16] [33 14]
+            [34 12] [36 12] [27 14] [24 19] [26 16]
+            [23 18] [34 16] [32 15] [12 15] [33 13]
+            [36 17] [46 14] [29 16] [36 11] [12 16]
+            [22 15] [23 14] [24 13] [22 16] [22 17]
+            [32 14] [33 15] [13 16] [47 14] [13 15] [46 13]}})
 
 (defn rect-cell [x y]
   [:rect.cell
@@ -134,7 +132,7 @@
 (defn game []
   [:center
    [:h1 "Conway's Game of Life"]
-   [size-field]
+   [size-input]
    [:div
     [:button
      {:on-click
