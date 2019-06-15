@@ -62,9 +62,9 @@
 (def penta-decathlon
   {:name "Penta-decathlon"
    :lives
-   #{[4 3] [3 4] [2 4] [9 3] [11 4] [4 5] [9 5] [7 4]
-     [8 4] [5 4] [10 4] [6 4]}
-  :size 14})
+   #{[8 5] [5 5] [13 5] [11 4] [4 5] [12 5]
+     [9 5] [6 6] [7 5] [10 5] [11 6] [6 4]}
+  :size 18})
 
 (def glider-gun
   {:name "Glider gun"
