@@ -10,7 +10,7 @@
 * Sample configurations
 * Custom grid size
 
-Play it live [Here](https://BTowersCoding.github.io/conway/)
+Play it live [Here](https://bobbicodes.github.io/conway/)
 
 ## Development
 
